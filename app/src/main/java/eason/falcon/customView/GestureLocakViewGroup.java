@@ -6,6 +6,8 @@ import android.graphics.Paint;
 import android.graphics.Path;
 import android.graphics.Point;
 import android.util.AttributeSet;
+import android.view.MotionEvent;
+import android.view.View;
 import android.widget.RelativeLayout;
 
 import java.util.ArrayList;
@@ -157,9 +159,87 @@ public class GestureLocakViewGroup extends RelativeLayout {
                 addView(mGestureLockViews[i],lockerParasm);
             }
         }
-
-
     }
+
+    @Override
+    public boolean onTouchEvent(MotionEvent event)
+    {
+        int action=event.getAction();
+        int x=(int)event.getX();
+        int y=(int)event.getY();
+        switch (action)
+        {
+            case MotionEvent.ACTION_DOWN:
+                break;
+            case MotionEvent.ACTION_MOVE:
+                break;
+
+        }
+        return super.onTouchEvent(event);
+    }
+
+    private void reset()
+    {
+        mChoose.clear();
+        mPath.reset();
+        for(GestureLockView cestureLockView :mGestureLockViews)
+        {
+            cestureLockView.setMode(GestureLockView.Mode.STATUS_NO_FINGER);
+            cestureLockView.setArrowDegree(-1);
+        }
+    }
+
+    private boolean checkAnswers()
+    {
+        if(mAnswer==null)
+        {
+            return true;
+        }
+
+        if(mAnswer.size()!=mChoose.size())
+        {
+            return false;
+        }
+
+        for(int i=0,len=mAnswer.size();i<len;++i)
+        {
+            if(mAnswer.get(i)!=mChoose.get(i))
+            {
+                return  false;
+            }
+        }
+
+        return true;
+    }
+
+    private boolean checkPositionInChild(View child, int x, int y)
+    {
+        int  padding=(int)(mGestureLockViewWidth*0.15);
+        if(x>child.getLeft()+padding&&y>child.getTop()+padding&&x<child.getRight()-padding&&y<child.getBottom()-padding)
+        {
+            return true;
+        }
+        return false;
+    }
+
+    private GestureLockView getChildByPos(int x,int y)
+    {
+        for(GestureLockView gestureLockView:mGestureLockViews)
+        {
+            if(checkPositionInChild(gestureLockView,x,y))
+            {
+                return gestureLockView;
+            }
+        }
+        return null;
+    }
+
+    public void setGestureLockViewListener(OnGestureLockViewListener listener)
+    {
+        this.mOnGestureLockViewListener=listener;
+    }
+
+
 
     public interface OnGestureLockViewListener{
         public void onBlockSelected(int cId);
