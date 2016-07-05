@@ -45,6 +45,28 @@ public class GestureLockView extends View {
         mArrowPath = new Path();
     }
 
+    @Override
+    protected void onMeasure(int widthMeasureSpec, int heightMeasureSpec) {
+        super.onMeasure(widthMeasureSpec, heightMeasureSpec);
+
+        mWidth = MeasureSpec.getSize(widthMeasureSpec);
+        mHeight = MeasureSpec.getSize(heightMeasureSpec);
+
+        // 取长和宽中的小值
+        mWidth = mWidth < mHeight ? mWidth : mHeight;
+        mRadius = mCenterX = mCenterY = mWidth / 2;
+        mRadius -= mStrokeWidth / 2;
+
+        // 绘制三角形，初始时是个默认箭头朝上的一个等腰三角形，用户绘制结束后，根据由两个GestureLockView决定需要旋转多少度
+        float mArrowLength = mWidth / 2 * mArrowRate;
+        mArrowPath.moveTo(mWidth / 2, mStrokeWidth + 2);
+        mArrowPath.lineTo(mWidth / 2 - mArrowLength, mStrokeWidth + 2 + mArrowLength);
+        mArrowPath.lineTo(mWidth / 2 + mArrowLength, mStrokeWidth + 2 + mArrowLength);
+        mArrowPath.close();
+        mArrowPath.setFillType(Path.FillType.WINDING);
+
+    }
+
     protected void onDraw(Canvas canvas) {
         switch (mCurrentStatus) {
             case STATUS_FINGER_ON:

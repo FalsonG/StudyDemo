@@ -61,17 +61,17 @@ public class GestureLocakViewGroup extends RelativeLayout {
     private OnGestureLockViewListener mOnGestureLockViewListener;
 
     public GestureLocakViewGroup(Context context, AttributeSet attributeSet) {
-        super(context, attributeSet);
-        initResources(context, attributeSet);
+        this(context, attributeSet,0);
+//        initResources(context, attributeSet);
     }
 
     public GestureLocakViewGroup(Context context, AttributeSet attrs, int defStyle) {
         super(context, attrs, defStyle);
-        initResources(context, attrs);
+        initResources(context, attrs,defStyle);
     }
 
-    private void initResources(Context context, AttributeSet attrs) {
-        TypedArray a = context.getTheme().obtainStyledAttributes(attrs, R.styleable.GestureLockViewGroup, 0, 0);
+    private void initResources(Context context, AttributeSet attrs,int defStyle) {
+        TypedArray a = context.getTheme().obtainStyledAttributes(attrs, R.styleable.GestureLockViewGroup, defStyle, 0);
         int n = a.getIndexCount();
         for (int i = 0; i < n; ++i) {
             int attr = a.getIndex(i);
@@ -104,6 +104,7 @@ public class GestureLocakViewGroup extends RelativeLayout {
         mPaint = new Paint(Paint.ANTI_ALIAS_FLAG);
         mPaint.setStyle(Paint.Style.STROKE);
         mPaint.setStrokeCap(Paint.Cap.ROUND);
+        mPaint.setStrokeJoin(Paint.Join.ROUND);
         mPath = new Path();
     }
 
@@ -120,7 +121,7 @@ public class GestureLocakViewGroup extends RelativeLayout {
             mGestureLockViews = new GestureLockView[mCount * mCount];
             mGestureLockViewWidth = (int) (4 * mWidth * 1.0f / (5 * mCount + 1));
             mMarginBetweenLockView = (int) (mGestureLockViewWidth * 0.25);
-            mPaint.setStrokeWidth(mGestureLockViewWidth * 029f);
+            mPaint.setStrokeWidth(mGestureLockViewWidth * 0.29f);
             for (int i = 0; i < mGestureLockViews.length; ++i) {
                 mGestureLockViews[i] = new GestureLockView(getContext(), mNoFingerInnerCircleColor, mNoFingerOuterCircleColr, mFingerOnColor, mFingerUpColor);
                 mGestureLockViews[i].setId(i + 1);
@@ -171,6 +172,7 @@ public class GestureLocakViewGroup extends RelativeLayout {
                         child.setMode(GestureLockView.Mode.STATUS_FINGER_ON);
                         if (mOnGestureLockViewListener != null) {
                             mOnGestureLockViewListener.onBlockSelected(cId);
+                        }
                             mLastPathX = child.getLeft() / 2 + child.getRight() / 2;
                             mLastPathY = child.getTop() / 2 + child.getBottom() / 2;
                             if (mChoose.size() == 1) {
@@ -178,11 +180,10 @@ public class GestureLocakViewGroup extends RelativeLayout {
                             } else {
                                 mPath.lineTo(mLastPathX, mLastPathY);
                             }
-                        }
-                        mTmpTarget.x = x;
-                        mTmpTarget.y = y;
                     }
                 }
+                mTmpTarget.x = x;
+                mTmpTarget.y = y;
                 break;
             case MotionEvent.ACTION_UP:
                 mPaint.setColor(mFingerUpColor);
@@ -212,7 +213,7 @@ public class GestureLocakViewGroup extends RelativeLayout {
                     int angle = (int) Math.toDegrees(Math.atan2(dy, dx)) + 90;
                     startChild.setArrowDegree(angle);
                 }
-                if (!mAnswer.isEmpty()) {
+                if (mAnswer.isEmpty()) {
                     mAnswer.clear();
                     mAnswer.addAll(mChoose);
 
@@ -225,11 +226,11 @@ public class GestureLocakViewGroup extends RelativeLayout {
                 } else {
                     mAnswer.clear();
                 }
-                invalidate();
                 break;
 
         }
-        return super.onTouchEvent(event);
+        invalidate();
+        return true;
     }
 
     public void setAnswer(List<Integer> answers)
