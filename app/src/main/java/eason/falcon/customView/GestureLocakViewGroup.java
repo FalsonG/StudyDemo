@@ -2,6 +2,7 @@ package eason.falcon.customView;
 
 import android.content.Context;
 import android.content.res.TypedArray;
+import android.graphics.Canvas;
 import android.graphics.Paint;
 import android.graphics.Path;
 import android.graphics.Point;
@@ -22,7 +23,7 @@ import eason.falcon.studydemo.R;
  */
 public class GestureLocakViewGroup extends RelativeLayout {
 
-    private GestureLockView[] mGestureLockViews;
+    private GestureLockView[] mGestureLockViews = null;
 
     private int mCount = 3;
 
@@ -61,16 +62,16 @@ public class GestureLocakViewGroup extends RelativeLayout {
     private OnGestureLockViewListener mOnGestureLockViewListener;
 
     public GestureLocakViewGroup(Context context, AttributeSet attributeSet) {
-        this(context, attributeSet,0);
+        this(context, attributeSet, 0);
 //        initResources(context, attributeSet);
     }
 
     public GestureLocakViewGroup(Context context, AttributeSet attrs, int defStyle) {
         super(context, attrs, defStyle);
-        initResources(context, attrs,defStyle);
+        initResources(context, attrs, defStyle);
     }
 
-    private void initResources(Context context, AttributeSet attrs,int defStyle) {
+    private void initResources(Context context, AttributeSet attrs, int defStyle) {
         TypedArray a = context.getTheme().obtainStyledAttributes(attrs, R.styleable.GestureLockViewGroup, defStyle, 0);
         int n = a.getIndexCount();
         for (int i = 0; i < n; ++i) {
@@ -173,13 +174,13 @@ public class GestureLocakViewGroup extends RelativeLayout {
                         if (mOnGestureLockViewListener != null) {
                             mOnGestureLockViewListener.onBlockSelected(cId);
                         }
-                            mLastPathX = child.getLeft() / 2 + child.getRight() / 2;
-                            mLastPathY = child.getTop() / 2 + child.getBottom() / 2;
-                            if (mChoose.size() == 1) {
-                                mPath.moveTo(mLastPathX, mLastPathY);
-                            } else {
-                                mPath.lineTo(mLastPathX, mLastPathY);
-                            }
+                        mLastPathX = child.getLeft() / 2 + child.getRight() / 2;
+                        mLastPathY = child.getTop() / 2 + child.getBottom() / 2;
+                        if (mChoose.size() == 1) {
+                            mPath.moveTo(mLastPathX, mLastPathY);
+                        } else {
+                            mPath.lineTo(mLastPathX, mLastPathY);
+                        }
                     }
                 }
                 mTmpTarget.x = x;
@@ -206,7 +207,6 @@ public class GestureLocakViewGroup extends RelativeLayout {
                     int nextChildId = mChoose.get(i + 1);
                     GestureLockView startChild = (GestureLockView) findViewById(childId);
                     GestureLockView nextChild = (GestureLockView) findViewById(nextChildId);
-
                     int dx = nextChild.getLeft() - startChild.getLeft();
                     int dy = nextChild.getTop() - startChild.getTop();
 
@@ -227,20 +227,17 @@ public class GestureLocakViewGroup extends RelativeLayout {
                     mAnswer.clear();
                 }
                 break;
-
         }
         invalidate();
         return true;
     }
 
-    public void setAnswer(List<Integer> answers)
-    {
+    public void setAnswer(List<Integer> answers) {
         this.mAnswer.addAll(answers);
     }
 
-    public void setUnMatchExceedBoundary(int boundary)
-    {
-        this.mTryTimes=boundary;
+    public void setUnMatchExceedBoundary(int boundary) {
+        this.mTryTimes = boundary;
     }
 
     private void changeItemMode() {
@@ -284,6 +281,23 @@ public class GestureLocakViewGroup extends RelativeLayout {
             return true;
         }
         return false;
+    }
+
+    @Override
+    public void dispatchDraw(Canvas canvas)
+    {
+        super.dispatchDraw(canvas);
+        if(null!=mPath)
+        {
+            canvas.drawPath(mPath,mPaint);
+        }
+        if(mChoose.size()>0)
+        {
+            if(mLastPathX!=0&&mLastPathY!=0)
+            {
+                canvas.drawLine(mLastPathX,mLastPathY,mTmpTarget.x,mTmpTarget.y,mPaint);
+            }
+        }
     }
 
     private GestureLockView getChildByPos(int x, int y) {
