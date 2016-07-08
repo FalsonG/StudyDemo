@@ -63,7 +63,6 @@ public class GestureLocakViewGroup extends RelativeLayout {
 
     public GestureLocakViewGroup(Context context, AttributeSet attributeSet) {
         this(context, attributeSet, 0);
-//        initResources(context, attributeSet);
     }
 
     public GestureLocakViewGroup(Context context, AttributeSet attrs, int defStyle) {
@@ -315,10 +314,14 @@ public class GestureLocakViewGroup extends RelativeLayout {
 
 
     public interface OnGestureLockViewListener {
-        public void onBlockSelected(int cId);
+         void onBlockSelected(int cId);
 
-        public void onGestureEvent(boolean matched);
+         void onGestureEvent(boolean matched);
 
-        public void onUnmatchedExceedBoundary();
+         void onUnmatchedExceedBoundary();
+
+        void setGestureSuccess();
+
+        void setGestureFailure();
     }
 }

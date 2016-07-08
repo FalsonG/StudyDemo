@@ -1,7 +1,9 @@
 package eason.falcon.studydemo;
 
+import android.content.SharedPreferences;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.text.TextUtils;
 import android.widget.Toast;
 
 import java.util.ArrayList;
@@ -18,11 +20,16 @@ public class MainActivity extends AppCompatActivity {
         setContentView(R.layout.activity_main);
         mGestureLockViewGroup = (GestureLocakViewGroup) findViewById(R.id.id_gestureLockViewGroup);
         ArrayList<Integer> answers = new ArrayList<>();
-        answers.add(1);
-        answers.add(2);
-        answers.add(3);
-        answers.add(4);
-        answers.add(5);
+        SharedPreferences sharedPreferences=getSharedPreferences("test",MODE_APPEND);
+        String keys=sharedPreferences.getString("vales","");
+        if(!TextUtils.isEmpty(keys))
+        {
+            String[] strs=keys.split(",");
+            for(int i=0,len=strs.length;i<len;++i)
+            {
+                answers.add(Integer.parseInt(strs[i]));
+            }
+        }
         mGestureLockViewGroup.setAnswer(answers);
         mGestureLockViewGroup
                 .setGestureLockViewListener(new GestureLocakViewGroup.OnGestureLockViewListener() {
@@ -43,6 +50,22 @@ public class MainActivity extends AppCompatActivity {
                     @Override
                     public void onBlockSelected(int cId) {
                     }
+
+                    @Override
+                    public void setGestureSuccess()
+                    {
+
+                    }
+
+                    @Override
+                    public void setGestureFailure()
+                    {
+
+                    }
                 });
     }
+    private void showNotifyCation()
+    {
+    }
 }
+
