@@ -12,18 +12,19 @@ import com.google.android.gms.appindexing.Action;
 import com.google.android.gms.appindexing.AppIndex;
 import com.google.android.gms.common.api.GoogleApiClient;
 
-import retrofit.Callback;
-import retrofit.RestAdapter;
-import retrofit.RetrofitError;
-import retrofit.client.Response;
-import study.falson.com.API.GitAPI;
+import java.util.List;
+
+import retrofit2.Call;
+import retrofit2.Retrofit;
+import study.falson.com.API.GitHubService;
 import study.falson.com.Mode.GitModel;
+import study.falson.com.Mode.Repo;
 
 public class IphoneTreeActivity extends AppCompatActivity {
     Button click;
     TextView tv;
     EditText edit_user;
-    String API = "https://api.github.com";  // BASE URL
+    String API = "https://api.github.com/";  // BASE URL
     /**
      * ATTENTION: This was auto-generated to implement the App Indexing API.
      * See https://g.co/AppIndexing/AndroidStudio for more information.
@@ -34,8 +35,6 @@ public class IphoneTreeActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_iphone_tree);
-        // ATTENTION: This was auto-generated to implement the App Indexing API.
-        // See https://g.co/AppIndexing/AndroidStudio for more information.
         client = new GoogleApiClient.Builder(this).addApi(AppIndex.API).build();
 
         click = (Button) findViewById(R.id.custom_button);
@@ -47,32 +46,10 @@ public class IphoneTreeActivity extends AppCompatActivity {
             public void onClick(View v) {
                 String user = edit_user.getText().toString();
 
-                // Retrofit section start from here...
-                // create an adapter for retrofit with base url
-                RestAdapter restAdapter = new RestAdapter.Builder().setEndpoint(API).build();
+                Retrofit retrofit=new Retrofit.Builder().baseUrl("https://api.github.com/").build();
+                GitHubService service=retrofit.create(GitHubService.class);
+                Call<List<GitModel>> repos=service.listRepos("octocat");
 
-                // creating a service for adapter with our GET class
-                GitAPI git = restAdapter.create(GitAPI.class);
-
-                // Now ,we need to call for response
-                // Retrofit using gson for JSON-POJO conversion
-
-                git.getFeed(user,new Callback<GitModel>() {
-                    @Override
-                    public void success(GitModel gitmodel, Response response) {
-                        // we get json object from github server to our POJO or model class
-
-                        tv.setText("Github Name :" + gitmodel.getName() +
-                                "\nWebsite :"+gitmodel.getBlog() +
-                                "\nCompany Name :"+gitmodel.getCompany());
-
-                    }
-
-                    @Override
-                    public void failure(RetrofitError error) {
-                        tv.setText(error.getMessage());
-                    }
-                });
             }
         });
     }
