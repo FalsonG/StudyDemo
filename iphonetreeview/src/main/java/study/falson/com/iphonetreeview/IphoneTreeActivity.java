@@ -35,6 +35,8 @@ public class IphoneTreeActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_iphone_tree);
+
+        
         client = new GoogleApiClient.Builder(this).addApi(AppIndex.API).build();
 
         click = (Button) findViewById(R.id.custom_button);
